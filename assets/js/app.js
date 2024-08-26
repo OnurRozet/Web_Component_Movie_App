@@ -22,32 +22,26 @@ let movies = [
   },
 ];
 
-// filmleri search et
 
-const search_text = document.querySelector(".search_text");
-search_text.addEventListener("keydown", (event) => {
-  if (event.code === "Enter") {
-    searchMovie()
-  }
-});
-
-async function searchMovie() {
-  const response = await fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=739091df&s=${search_text.value}`);
+async function searchMovie(search_text) {
+  const response = await fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=739091df&s=${search_text}`);
   const data = await response.json()
-  let result = data.Search.map((movie)=>{
-    return {
-      title:movie.Title,
-      poster:movie.Poster === "N/A" ? "/assets/images/default.png" : movie.Poster,
-      description:`${movie.Year}/${movie.Type}`,
-      isFavourite:false,
-      imdbID:movie.imdbID
-    }
-  })
+  if(data.Response === "True"){
+    let result = data.Search.map((movie)=>{
+      return {
+        title:movie.Title,
+        poster:movie.Poster === "N/A" ? "/assets/images/default.png" : movie.Poster,
+        description:`${movie.Year}/${movie.Type}`,
+        isFavourite:false,
+        imdbID:movie.imdbID
+      }
+    })
 
-  console.log("data",result);
+    prepareMovies(result)
 
-  prepareMovies(result)
-  
+  }else{
+    document.querySelector("#movies").innerHTML = data.Error
+  }
 }
 
 //filmleri hazırla...
